@@ -2,7 +2,7 @@
 using System.Reflection.Emit;
 using UnityEngine;
 
-public class City
+public class Map
 {
     public readonly int Rows = 10;
     public readonly int Cols = 10;
@@ -11,7 +11,7 @@ public class City
 
     MapCell[,] mapCells;
 
-    public City(int rows, int cols)
+    public Map(int rows, int cols)
     {
         Rows = rows;
         Cols = cols;
