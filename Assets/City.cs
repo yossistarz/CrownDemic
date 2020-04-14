@@ -149,22 +149,8 @@ public class City
 
             while (position != to.Position)
             {
-                var cell = GetMapCell(position);
-
-                if (cell == null)
-                {
-                    cell = new MapCell()
-                    {
-                        ConnectionPoints = new List<PathInCell>(),
-                        MapCellType = MapCellType.None
-                    };
-                }
-
-                var path = new PathInCell();
-                BuildPath(path);
-                cell.ConnectionPoints.Add(path);
-
-                SetMapCell(position, cell);
+                var cell = GetOrCreateCell(position);
+                cell.MapCellType = MapCellType.Road;
 
                 if (position.Col == to.Position.Col || 
                     position.Row == to.Position.Row)
@@ -173,30 +159,73 @@ public class City
                     colSteps = 1 - colSteps;
                 }
 
-                position = new MapPoint(position.Row + Rows * rowSign, position.Col + colSteps * colSign);
+                var nextPosition = new MapPoint(position.Row + rowSteps * rowSign, position.Col + colSteps * colSign);
+                var nextCell = GetOrCreateCell(nextPosition);
+                BuildPath(cell, nextCell);
+
+                SetMapCell(position, cell);
+                SetMapCell(nextPosition, nextCell);
+
+                position = nextPosition;
             }
 
-            void BuildPath(PathInCell path)
+            void BuildPath(MapCell from, MapCell to)
             {
-                path.Points = new CellPoint[2];
+                var fromPath = new PathInCell();
+                var toPath = new PathInCell();
 
+                fromPath.Points = new CellPoint[2];
+                fromPath.Points[0] = new CellPoint(0.5f, 0.5f);
+                fromPath.Points[1] = new CellPoint(0.5f + 0.5f * colSign, 0.5f + 0.5f * rowSign);
+                if (PathExists(from, fromPath) == false)
+                {
+                    from.ConnectionPoints.Add(fromPath);
+                }
 
-                //// Vertical road
-                //if (rowSteps != 0)
-                //{
+                toPath.Points = new CellPoint[2];
+                toPath.Points[0] = new CellPoint(0.5f, 0.5f);
+                toPath.Points[1] = new CellPoint(0.5f - 0.5f * colSign, 0.5f - 0.5f * rowSign);
+                if (PathExists(to, toPath) == false)
+                {
+                    to.ConnectionPoints.Add(toPath);
+                }
+            }
 
-                //}
-                //// horizontal road
-                //else
-                //{
+            bool PathExists(MapCell cell, PathInCell path)
+            {
+                for (var i =0; i < cell.ConnectionPoints.Count; i++)
+                {
+                    var existingPath = cell.ConnectionPoints[i];
+                    if (path.Points.Length ==2 && existingPath.Points.Length == 2 && existingPath.Points[1] == path.Points[1])
+                    {
+                        return true;
+                    }
+                }
 
-                //}
+                return false;
             }
         }
 
         void FillBlank()
         {
 
+        }
+
+        MapCell GetOrCreateCell(MapPoint point)
+        {
+            var cell = GetMapCell(point);
+
+            if (cell == null)
+            {
+                cell = new MapCell()
+                {
+                    ConnectionPoints = new List<PathInCell>(),
+                    MapCellType = MapCellType.None,
+                    Position = point
+                };
+            }
+
+            return cell;
         }
     }
 
@@ -292,6 +321,37 @@ public class City
     {
         public float X;
         public float Y;
+
+        public CellPoint(float x, float y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public static bool operator !=(CellPoint left, CellPoint right)
+        {
+            return left.Equals(right) == false;
+        }
+
+        public static bool operator ==(CellPoint left, CellPoint right)
+        {
+            return left.Equals(right);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is CellPoint cellPoint)
+            {
+                return X == cellPoint.X && Y == cellPoint.Y;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return X.GetHashCode() * 31 + Y.GetHashCode();
+        }
     }
 
     public struct PathInCell
