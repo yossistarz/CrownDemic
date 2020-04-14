@@ -169,7 +169,7 @@ public class City
                 position = nextPosition;
             }
 
-            void BuildPath(MapCell from, MapCell to)
+            void BuildPath(MapCell fromCell, MapCell toCell)
             {
                 var fromPath = new PathInCell();
                 var toPath = new PathInCell();
@@ -177,17 +177,17 @@ public class City
                 fromPath.Points = new CellPoint[2];
                 fromPath.Points[0] = new CellPoint(0.5f, 0.5f);
                 fromPath.Points[1] = new CellPoint(0.5f + 0.5f * colSign, 0.5f + 0.5f * rowSign);
-                if (PathExists(from, fromPath) == false)
+                if (PathExists(fromCell, fromPath) == false)
                 {
-                    from.ConnectionPoints.Add(fromPath);
+                    fromCell.ConnectionPoints.Add(fromPath);
                 }
 
                 toPath.Points = new CellPoint[2];
                 toPath.Points[0] = new CellPoint(0.5f, 0.5f);
                 toPath.Points[1] = new CellPoint(0.5f - 0.5f * colSign, 0.5f - 0.5f * rowSign);
-                if (PathExists(to, toPath) == false)
+                if (PathExists(toCell, toPath) == false)
                 {
-                    to.ConnectionPoints.Add(toPath);
+                    toCell.ConnectionPoints.Add(toPath);
                 }
             }
 
