@@ -262,7 +262,19 @@ public class Map
 
         void FillBlank()
         {
+            for (var row = 0; row < Rows; row++)
+            {
+                for (var col = 0; col < Cols; col++)
+                {
+                    var cell = GetOrCreateCell(new MapPoint(row, col));
+                    if (cell.MapCellType == MapCellType.None)
+                    {
+                        cell.MapCellType = MapCellType.Free;
+                    }
 
+                    SetMapCell(cell.Position, cell);
+                }
+            }
         }
 
         MapCell GetOrCreateCell(MapPoint point)

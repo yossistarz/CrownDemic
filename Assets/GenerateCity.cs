@@ -9,6 +9,8 @@ public class GenerateCity : MonoBehaviour
 
     public GameObject RoadTemplate;
     public GameObject IntersectionTemplate;
+    public GameObject FreeTemplate;
+
 
     // Start is called before the first frame update
     void Start()
@@ -22,20 +24,11 @@ public class GenerateCity : MonoBehaviour
             {
                 var cell = _map.GetMapCell(row, col);
 
-                newCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                newCube.transform.localScale = new Vector3(cellSize, 0.1f, cellSize);
-                newCube.transform.parent = this.transform;
-                newCube.transform.position = new Vector3(row * cellSize - cellSize / 2, 0, col * cellSize - cellSize / 2);
-
                 if (cell != null)
                 {
                     if (cell.MapCellType == Map.MapCellType.Road)
                     {
-                        //var newCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        //newCube.transform.localScale = new Vector3(cellSize, 0.1f, cellSize);
-                        //newCube.transform.parent = this.transform;
-                        //newCube.transform.position = new Vector3(row * cellSize - cellSize / 2, 0, col * cellSize - cellSize / 2);
-
+                       
                         foreach (var path in cell.ConnectionPoints)
                         {
                             newCube = Instantiate<GameObject>(RoadTemplate);
@@ -50,6 +43,20 @@ public class GenerateCity : MonoBehaviour
                         }
                     }
                     
+                    if (cell.MapCellType == Map.MapCellType.Free)
+                    {
+                        newCube = Instantiate<GameObject>(FreeTemplate);
+                        newCube.SetActive(true);
+                    }
+                    else
+                    {
+                        newCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    }
+
+                    newCube.transform.localScale = new Vector3(cellSize, 0.1f, cellSize);
+                    newCube.transform.parent = this.transform;
+                    newCube.transform.position = new Vector3(row * cellSize - cellSize / 2, 0, col * cellSize - cellSize / 2);
+
                 }
 
             }
