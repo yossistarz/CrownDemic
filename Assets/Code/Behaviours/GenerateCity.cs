@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Map;
 
 public class GenerateCity : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class GenerateCity : MonoBehaviour
     public GameObject IntersectionTemplate;
     public GameObject FreeTemplate;
 
+    public Map Map { get => _map; }
 
     // Start is called before the first frame update
     void Start()
@@ -35,10 +37,7 @@ public class GenerateCity : MonoBehaviour
                             float cubeSize = cellSize / 2f;
                             newCube.transform.localScale = new Vector3(cubeSize, 0.3f, cubeSize);
                             newCube.transform.parent = this.transform;
-                            newCube.transform.position = new Vector3(
-                                row * cellSize - cellSize / 2 + cubeSize * (path.Points[1].Y - 0.5f) , 
-                                0, 
-                                col * cellSize - cellSize / 2 + cubeSize * (path.Points[1].X - 0.5f));
+                            newCube.transform.position = GetWorldPosition(cell.Position, path.Points[1], new Vector2(cubeSize, cubeSize));
                             newCube.SetActive(true);
                         }
                     }
@@ -55,7 +54,7 @@ public class GenerateCity : MonoBehaviour
 
                     newCube.transform.localScale = new Vector3(cellSize, 0.1f, cellSize);
                     newCube.transform.parent = this.transform;
-                    newCube.transform.position = new Vector3(row * cellSize - cellSize / 2, 0, col * cellSize - cellSize / 2);
+                    newCube.transform.position = GetWorldPosition(cell.Position);
 
                 }
 
@@ -68,10 +67,7 @@ public class GenerateCity : MonoBehaviour
             float cubeSize = cellSize / 4f;
             newCube.transform.localScale = new Vector3(cubeSize, 0.4f, cubeSize);
             newCube.transform.parent = this.transform;
-            newCube.transform.position = new Vector3(
-                intersect.Position.Row * cellSize - cellSize / 2 ,
-                0,
-                intersect.Position.Col * cellSize - cellSize / 2);
+            newCube.transform.position = GetWorldPosition(intersect.Position);
             newCube.SetActive(true);
 
             var cell = _map.GetMapCell(intersect.Position);
@@ -81,10 +77,7 @@ public class GenerateCity : MonoBehaviour
                 cubeSize = cellSize / 1.8f;
                 newCube.transform.localScale = new Vector3(cubeSize, 0.2f, cubeSize);
                 newCube.transform.parent = this.transform;
-                newCube.transform.position = new Vector3(
-                    intersect.Position.Row * cellSize - cellSize / 2 + cubeSize * (path.Points[1].Y - 0.5f),
-                    0,
-                    intersect.Position.Col * cellSize - cellSize / 2 + cubeSize * (path.Points[1].X - 0.5f));
+                newCube.transform.position = GetWorldPosition(cell.Position, path.Points[1], new Vector2(cubeSize, cubeSize));
                 newCube.SetActive(true);
             }
         }
@@ -94,11 +87,23 @@ public class GenerateCity : MonoBehaviour
         // https://docs.unity3d.com/ScriptReference/Transform-parent.html?_ga=2.51063529.1903334404.1586621367-266296751.1584777261 
     }
 
-    // Update is called once per frame
-    void Update()
+
+    public Vector3 GetWorldPosition(MapPoint point)
     {
-        
+        return GetWorldPosition(point, new CellPoint(0.5f, 0.5f), new Vector2(cellSize, cellSize));
     }
 
-    
+    public Vector3 GetWorldPosition(MapPoint point, CellPoint relativeUVPositioning)
+    {
+        return GetWorldPosition(point, relativeUVPositioning, new Vector2(cellSize, cellSize));
+    }
+
+    public Vector3 GetWorldPosition(MapPoint point, CellPoint relativeUVPositioning, Vector2 objectSize2D)
+    {
+        // Not sure abou the objectSize2D if it should be in the oposite direction or not.
+        return new Vector3(
+            point.Row * cellSize - cellSize / 2 + objectSize2D.y * (relativeUVPositioning.Y - 0.5f),
+            0,
+            point.Col * cellSize - cellSize / 2 + objectSize2D.x * (relativeUVPositioning.X - 0.5f));
+    }
 }
