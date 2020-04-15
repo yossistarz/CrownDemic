@@ -3,27 +3,26 @@ using UnityEngine;
 
 public class DrivingControler : MonoBehaviour
 {
-    private readonly Vector3 WeelRotationVector = new Vector3(0,1,0);
+    private readonly Vector3 _wheelRotationVector = new Vector3(0,1,0);
 
     const string _isDrivingParameterName = "Driving";
     const string _drivingState = "driving";
     const string _idleState = "idle";
     const string _loosingSpeedState = "loosingSpeed";
-
-    Animator _animator;
-    StateMachine _stateMachine;
-    Transform _transform;
-
-    Transform _leftWeelTransform;
-    Transform _rightWeelTransform;
-
-    float _weelAngle = 0;
-    float _speed = 0f;
-    float _acceleration = 0f;
-
+    
+    // From Unity?
+    public Animator _animator;
+    public StateMachine _stateMachine;
+    public Transform _transform;
+    public Transform _leftWheelTransform;
+    public Transform _rightWheelTransform;
     public GameObject FrontWeelLeft;
     public GameObject FrontWeelRight;
     public GameObject AnimatedObject;
+
+    public float _wheelAngle = 0;
+    public float _speed = 0f;
+    public float _acceleration = 0f;
     public float MaxSpeed = 5f;
     public float MaxAcceleration = 0.5f;
     public float AccelerationPower = 0.05f;
@@ -47,8 +46,8 @@ public class DrivingControler : MonoBehaviour
     void Start()
     {
         _animator = AnimatedObject.GetComponent<Animator>();
-        _leftWeelTransform = FrontWeelLeft?.GetComponent<Transform>();
-        _rightWeelTransform = FrontWeelRight?.GetComponent<Transform>();
+        _leftWheelTransform = FrontWeelLeft?.GetComponent<Transform>();
+        _rightWheelTransform = FrontWeelRight?.GetComponent<Transform>();
 
         _transform = GetComponent<Transform>();
     }
@@ -65,25 +64,25 @@ public class DrivingControler : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            if (Mathf.Abs(_weelAngle) < MaxWeelAngle)
+            if (Mathf.Abs(_wheelAngle) < MaxWeelAngle)
             {
-                _weelAngle += -WeelRotationSpeed;
+                _wheelAngle += -WeelRotationSpeed;
             }
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            if (Mathf.Abs(_weelAngle) < MaxWeelAngle)
+            if (Mathf.Abs(_wheelAngle) < MaxWeelAngle)
             {
-                _weelAngle += WeelRotationSpeed;
+                _wheelAngle += WeelRotationSpeed;
             }
         }
         else
         {
-            _weelAngle = 0;
+            _wheelAngle = 0;
         }
 
-        _leftWeelTransform.rotation = _transform.rotation * Quaternion.Euler(0f, _weelAngle + 90f, 0f);
-        _rightWeelTransform.rotation = _transform.rotation * Quaternion.Euler(0f, _weelAngle + 90f, 0f);
+        _leftWheelTransform.rotation = _transform.rotation * Quaternion.Euler(0f, _wheelAngle + 90f, 0f);
+        _rightWheelTransform.rotation = _transform.rotation * Quaternion.Euler(0f, _wheelAngle + 90f, 0f);
     }
 
     private void UpdateAsset()
@@ -98,7 +97,7 @@ public class DrivingControler : MonoBehaviour
         var backwardWeelPosition = _transform.position - backwardWeel;
         var forwardWeelPosition = _transform.position + forwardWeel;
 
-        forwardWeelPosition += Quaternion.AngleAxis(_weelAngle, WeelRotationVector) * (localForward * WeelDistance * _speed * (float)Time.deltaTime);
+        forwardWeelPosition += Quaternion.AngleAxis(_wheelAngle, _wheelRotationVector) * (localForward * WeelDistance * _speed * (float)Time.deltaTime);
         backwardWeelPosition += localForward * WeelDistance * _speed * (float)Time.deltaTime;
 
         var carAngle = Vector3.Angle(forwardWeelPosition - backwardWeelPosition, localForward);
@@ -108,8 +107,8 @@ public class DrivingControler : MonoBehaviour
         Debug.DrawLine(backwardWeelPosition, forwardWeelPosition);
         if (_speed != 0)
         {
-            _transform.Rotate(WeelRotationVector, carAngle * Mathf.Sign(_weelAngle) * Mathf.Sign(_speed));
-            _transform.position += Quaternion.AngleAxis(carAngle, WeelRotationVector) * (_transform.forward * _speed * (float)Time.deltaTime);
+            _transform.Rotate(_wheelRotationVector, carAngle * Mathf.Sign(_wheelAngle) * Mathf.Sign(_speed));
+            _transform.position += Quaternion.AngleAxis(carAngle, _wheelRotationVector) * (_transform.forward * _speed * (float)Time.deltaTime);
         }
     }
 
