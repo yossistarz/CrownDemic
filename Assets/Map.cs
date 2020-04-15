@@ -1,11 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
+using System.Linq;
 using UnityEngine;
 
 public class Map
 {
-    public readonly int Rows = 10;
-    public readonly int Cols = 10;
+    // This consts are experemental features.
+    private const bool LimitOutboundEdge = true;
+    private const int OutboundLimit = 3;
+    private const bool UseNodeSpacing = true;
+
+    public readonly int Rows;
+    public readonly int Cols;
 
     public Node[] Intersections;
 
@@ -23,9 +29,19 @@ public class Map
 
     private void CreateIntersections()
     {
-        int maxNodes = Rows / 2 * Cols / 2;
-        int minNodes = (int)System.Math.Ceiling(maxNodes / 4.0f);
-        int nodeCount = Random.Range(minNodes, maxNodes);
+        int maxNodes = System.Math.Max(Rows, Cols) / 2;
+        int minNodes = (int)System.Math.Ceiling(maxNodes / 3.0f);
+        int nodeCount = Random.Range(minNodes, maxNodes + 1);
+        int minNodeDistance = 0;
+
+        if (UseNodeSpacing)
+        {
+            // This should allow us to space the nodes.
+            // This calc returns the amount of nodes that will be empty 
+            // (the squar is since the minNodeDistance is actually for both row and cols).
+            minNodeDistance = (int)Mathf.Sqrt(maxNodes / nodeCount) + 1;
+        }
+
         Intersections = new Node[nodeCount];
 
         CreateNodes();
@@ -35,20 +51,22 @@ public class Map
         {
             HashSet<MapPoint> mapPointsCreated = new HashSet<MapPoint>();
 
-            for (var i = 0; i < Intersections.Length; i++)
+            for (var i = 0; i < nodeCount; i++)
             {
                 MapPoint newPoint = new MapPoint()
                 {
-                    Row = Random.Range(0, Rows - 1),
-                    Col = Random.Range(0, Cols - 1)
+                    Row = Random.Range(0, Rows),
+                    Col = Random.Range(0, Cols)
                 };
-                int maxIteretions = maxNodes + 1;
 
-                while (mapPointsCreated.Contains(newPoint))
+                int maxIteretions = maxNodes * 2;
+                while (IsPositionSPaced(newPoint) == false)
                 {
-                    newPoint.Row += Random.Range(-1, 1) * 2;
-                    newPoint.Col += Random.Range(-1, 1) * 2;
+                    // Trying next possible empty space.
+                    newPoint.Row += Random.Range(-minNodeDistance, minNodeDistance + 1);
+                    newPoint.Col += Random.Range(-minNodeDistance, minNodeDistance + 1);
 
+                    // Preventing from row and col to be out of bounds.
                     newPoint.Row = System.Math.Min(System.Math.Max(newPoint.Row, 0), Rows - 1);
                     newPoint.Col = System.Math.Min(System.Math.Max(newPoint.Col, 0), Cols - 1);
 
@@ -60,17 +78,38 @@ public class Map
                     maxIteretions--;
                 }
 
-                mapPointsCreated.Add(newPoint);
+                SpacePosition(newPoint);
+
                 Intersections[i] = new Node()
                 {
                     Position = newPoint
                 };
             }
+            
+            bool IsPositionSPaced(MapPoint point)
+            {
+                return mapPointsCreated.Contains(point) == false;
+            }
+
+            void SpacePosition(MapPoint point)
+            {
+                for (var r = -minNodeDistance; r <= minNodeDistance; r++)
+                {
+                    for (var c = -minNodeDistance; c <= minNodeDistance; c++)
+                    {
+                        mapPointsCreated.Add(new MapPoint(point.Row + r, point.Col + c));
+                    }
+                }
+            }
         }
 
         void CreateConnectedNodes()
         {
-            int maxEdgeCount = nodeCount - 1;
+            int maxEdgeCount = nodeCount;
+            if (LimitOutboundEdge)
+            {
+                maxEdgeCount = OutboundLimit;
+            }
 
             Dictionary<int, HashSet<int>> graph = new Dictionary<int, HashSet<int>>();
             for (var i = 0; i < nodeCount; i++)
@@ -84,13 +123,13 @@ public class Map
 
                 // Currently doing this in the naive way
                 HashSet<int> selectedNodes = new HashSet<int>();
-                for (var edgeIndex = graph[i].Count; edgeIndex < edgeCount; edgeIndex++)
+                for (var edgeIndex = 0; edgeIndex < edgeCount; edgeIndex++)
                 {
                     int nextNode;
                     do
                     {
-                        nextNode = Random.Range(0, Intersections.Length - 1);
-                    } while (selectedNodes.Contains(nextNode));
+                        nextNode = Random.Range(0, nodeCount);
+                    } while (selectedNodes.Contains(nextNode) || nextNode == i);
 
                     graph[i].Add(nextNode);
                     graph[nextNode].Add(i);
@@ -115,6 +154,8 @@ public class Map
 
     private void FillMapCells()
     {
+        Dictionary<MapPoint, HashSet<MapPoint>> pathsCreated = new Dictionary<MapPoint, HashSet<MapPoint>>();
+
         FillIntersections();
         FillBlank();
 
@@ -123,13 +164,10 @@ public class Map
             for (var i = 0; i < Intersections.Length; i++)
             {
                 var node = Intersections[i];
-                var mapCell = new MapCell()
-                {
-                    MapCellType = MapCellType.Road,
-                    ConnectionPoints = new List<PathInCell>()
-                };
-
+                var mapCell = GetOrCreateCell(node.Position);
+                mapCell.MapCellType = MapCellType.Road;
                 SetMapCell(node.Position, mapCell);
+
                 foreach(var connectedNode in node.ConnectedNodes)
                 {
                     FillRoads(node, connectedNode);
@@ -139,7 +177,7 @@ public class Map
 
         void FillRoads(Node from, Node to)
         {
-            var rowSteps = Random.Range(0, 1);
+            var rowSteps = Random.Range(0, 2);
             var colSteps = 1 - rowSteps;
 
             var rowSign = System.Math.Sign(to.Position.Row - from.Position.Row);
@@ -147,13 +185,29 @@ public class Map
 
             MapPoint position = from.Position;
 
+            if (pathsCreated.ContainsKey(from.Position) == false) 
+            {
+                pathsCreated.Add(from.Position, new HashSet<MapPoint>());
+            }
+            if (pathsCreated.ContainsKey(to.Position) == false)
+            {
+                pathsCreated.Add(to.Position, new HashSet<MapPoint>());
+            }
+
+            if (pathsCreated[to.Position].Contains(from.Position))
+            {
+                return;
+            }
+
+            pathsCreated[from.Position].Add(to.Position);
+
             while (position != to.Position)
             {
                 var cell = GetOrCreateCell(position);
                 cell.MapCellType = MapCellType.Road;
 
-                if (position.Col == to.Position.Col || 
-                    position.Row == to.Position.Row)
+                if ((position.Col == to.Position.Col && colSteps != 0) || 
+                    (position.Row == to.Position.Row && rowSteps != 0))
                 {
                     rowSteps = 1 - rowSteps;
                     colSteps = 1 - colSteps;
@@ -176,7 +230,7 @@ public class Map
 
                 fromPath.Points = new CellPoint[2];
                 fromPath.Points[0] = new CellPoint(0.5f, 0.5f);
-                fromPath.Points[1] = new CellPoint(0.5f + 0.5f * colSign, 0.5f + 0.5f * rowSign);
+                fromPath.Points[1] = new CellPoint(0.5f + 0.5f * colSteps * colSign, 0.5f + 0.5f * rowSteps * rowSign);
                 if (PathExists(fromCell, fromPath) == false)
                 {
                     fromCell.ConnectionPoints.Add(fromPath);
@@ -184,7 +238,7 @@ public class Map
 
                 toPath.Points = new CellPoint[2];
                 toPath.Points[0] = new CellPoint(0.5f, 0.5f);
-                toPath.Points[1] = new CellPoint(0.5f - 0.5f * colSign, 0.5f - 0.5f * rowSign);
+                toPath.Points[1] = new CellPoint(0.5f - 0.5f * colSteps * colSign, 0.5f - 0.5f * rowSteps * rowSign);
                 if (PathExists(toCell, toPath) == false)
                 {
                     toCell.ConnectionPoints.Add(toPath);
@@ -238,7 +292,6 @@ public class Map
     public MapCell GetMapCell(MapPoint point)
     {
         return mapCells[point.Row, point.Col];
-
     }
 
     private void SetMapCell(int row, int col, MapCell cell)
