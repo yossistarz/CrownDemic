@@ -9,29 +9,28 @@ public class DrivingControler : MonoBehaviour
     const string _drivingState = "driving";
     const string _idleState = "idle";
     const string _loosingSpeedState = "loosingSpeed";
-    
-    // From Unity?
-    private Animator _animator;
-    private StateMachine _stateMachine;
-    private Transform _transform;
-    private Transform _leftWheelTransform;
-    private Transform _rightWheelTransform;
 
     public GameObject FrontWheelLeft;
     public GameObject FrontWheelRight;
     public GameObject AnimatedObject;
 
+    public float MaxSpeed = 5f;
+    public float MaxAcceleration = 0.5f;
+    public float AccelerationPower = 0.05f;
+    public float DeAcceleration = 0.01f;
+    public float BreakDeAcceleration = 0.01f;
+    public float WheelDistance = 0.8f;
+    public float MaxWheelAngle = 15f;
+    public float WheelRotationSpeed = 1f;
+
+    private Animator _animator;
+    private StateMachine _stateMachine;
+    private Transform _transform;
+    private Transform _leftWheelTransform;
+    private Transform _rightWheelTransform;
     private float _wheelAngle = 0;
     private float _speed = 0f;
     private float _acceleration = 0f;
-    private float MaxSpeed = 5f;
-    private float MaxAcceleration = 0.5f;
-    private float AccelerationPower = 0.05f;
-    private float DeAcceleration = 0.01f;
-    private float BreakDeAcceleration = 0.01f;
-    private float WheelDistance = 0.8f;
-    private float MaxWheelAngle = 15f;
-    private float WheelRotationSpeed = 1f;
 
     public DrivingControler()
     {
