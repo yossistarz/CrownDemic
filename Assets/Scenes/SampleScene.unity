@@ -421,9 +421,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 363610085}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.51, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 0.1, z: 5}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1211649472}
   m_RootOrder: 0
@@ -514,9 +514,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 618667385}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.51, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 0.1, z: 5}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1211649472}
   m_RootOrder: 1
@@ -1459,9 +1459,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1393558983}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.51, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 0.1, z: 5}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1211649472}
   m_RootOrder: 2
@@ -1477,6 +1477,7 @@ GameObject:
   - component: {fileID: 1442268798}
   - component: {fileID: 1442268797}
   - component: {fileID: 1442268800}
+  - component: {fileID: 1442268801}
   - component: {fileID: 1442268799}
   m_Layer: 0
   m_Name: Ambulance
@@ -1544,9 +1545,6 @@ MonoBehaviour:
   FrontWheelLeft: {fileID: 1152441535}
   FrontWheelRight: {fileID: 1305649772}
   AnimatedObject: {fileID: 1300163656}
-  _wheelAngle: 0
-  _speed: 0
-  _acceleration: 0
   MaxSpeed: 10
   MaxAcceleration: 0.05
   AccelerationPower: 0.01
@@ -1555,6 +1553,19 @@ MonoBehaviour:
   WheelDistance: 0.8
   MaxWheelAngle: 15
   WheelRotationSpeed: 1
+--- !u!114 &1442268801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1442268796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac06f671fa493a84e9e021bcb8a3deb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GenerateCity: {fileID: 1211649471}
 --- !u!1 &1809666871
 GameObject:
   m_ObjectHideFlags: 0

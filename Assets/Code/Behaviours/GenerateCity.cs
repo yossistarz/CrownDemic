@@ -5,7 +5,7 @@ using static Map;
 
 public class GenerateCity : MonoBehaviour
 {
-    const float cellSize = 20f;
+    const float cellSize = 10f;
     private Map _map;
 
     public GameObject RoadTemplate;
@@ -34,10 +34,17 @@ public class GenerateCity : MonoBehaviour
                         foreach (var path in cell.ConnectionPoints)
                         {
                             newCube = Instantiate<GameObject>(RoadTemplate);
-                            float cubeSize = cellSize / 2f;
-                            newCube.transform.localScale = new Vector3(cubeSize, 0.3f, cubeSize);
                             newCube.transform.parent = this.transform;
-                            newCube.transform.position = GetWorldPosition(cell.Position, path.Points[1], new Vector2(cubeSize, cubeSize));
+                            if (path.Points[1].Y == 0.5f)
+                            {
+                                newCube.transform.localScale = new Vector3(cellSize / 1.2f, 0.3f, cellSize / 2f);
+                            }
+                            else
+                            {
+                                newCube.transform.localScale = new Vector3(cellSize / 2f, 0.3f, cellSize / 1.2f);
+                            }
+                            newCube.transform.position = GetWorldPosition(cell.Position, path.Points[1], newCube.transform.localScale);
+
                             newCube.SetActive(true);
                         }
                     }
@@ -90,7 +97,7 @@ public class GenerateCity : MonoBehaviour
 
     public Vector3 GetWorldPosition(MapPoint point)
     {
-        return GetWorldPosition(point, new CellPoint(0.5f, 0.5f), new Vector2(cellSize, cellSize));
+        return GetWorldPosition(point, CellPoint.Center, new Vector2(cellSize, cellSize));
     }
 
     public Vector3 GetWorldPosition(MapPoint point, CellPoint relativeUVPositioning)
@@ -98,12 +105,18 @@ public class GenerateCity : MonoBehaviour
         return GetWorldPosition(point, relativeUVPositioning, new Vector2(cellSize, cellSize));
     }
 
+    public Vector3 GetWorldPosition(MapPoint point, CellPoint relativeUVPositioning, Vector3 objectSize2D)
+    {
+        return GetWorldPosition(point, relativeUVPositioning, new Vector2(objectSize2D.x, objectSize2D.z));
+    }
+
     public Vector3 GetWorldPosition(MapPoint point, CellPoint relativeUVPositioning, Vector2 objectSize2D)
     {
         // Not sure abou the objectSize2D if it should be in the oposite direction or not.
+        // In reality, the X is x while y is Z for the objectSize2D.
         return new Vector3(
-            point.Row * cellSize - cellSize / 2 + objectSize2D.y * (relativeUVPositioning.Y - 0.5f),
+            point.Row * cellSize - cellSize / 2 + objectSize2D.x * (relativeUVPositioning.Y - 0.5f),
             0,
-            point.Col * cellSize - cellSize / 2 + objectSize2D.x * (relativeUVPositioning.X - 0.5f));
+            point.Col * cellSize - cellSize / 2 + objectSize2D.y * (relativeUVPositioning.X - 0.5f));
     }
 }

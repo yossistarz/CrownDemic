@@ -384,6 +384,8 @@ public class Map
 
     public struct CellPoint
     {
+        public static CellPoint Center = new CellPoint(0.5f, 0.5f);
+
         public float X;
         public float Y;
 
