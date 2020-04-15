@@ -1350,16 +1350,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82989069d1de9ef4db0f4a4128991ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animator: {fileID: 0}
-  _transform: {fileID: 0}
-  _leftWheelTransform: {fileID: 0}
-  _rightWheelTransform: {fileID: 0}
   FrontWheelLeft: {fileID: 1152441535}
   FrontWheelRight: {fileID: 1305649772}
   AnimatedObject: {fileID: 1300163656}
-  _wheelAngle: 0
-  _speed: 0
-  _acceleration: 0
   MaxSpeed: 10
   MaxAcceleration: 0.05
   AccelerationPower: 0.01
