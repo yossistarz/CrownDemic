@@ -121,12 +121,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &91241261 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6235650747018723849, guid: cc8daf03157b2b94b8fbba22b8232e0e,
-    type: 3}
-  m_PrefabInstance: {fileID: 1300163655}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &112643926
 GameObject:
   m_ObjectHideFlags: 0
@@ -850,7 +844,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.26276523, y: 0.6268758, z: -0.23734757, w: 0.6940082}
+  m_LocalRotation: {x: 0.23143351, y: 0.6420502, z: -0.21247731, w: 0.6993308}
   m_LocalPosition: {x: 10.32, y: 2.94, z: -0.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -985,7 +979,7 @@ Transform:
   m_Father: {fileID: 300037703}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!1 &1118265281 stripped
+--- !u!1 &1152441535 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1522545123835681044, guid: cc8daf03157b2b94b8fbba22b8232e0e,
     type: 3}
@@ -1139,6 +1133,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1522545123835681044, guid: cc8daf03157b2b94b8fbba22b8232e0e,
+        type: 3}
+      propertyPath: m_Name
+      value: WheelLeft
+      objectReference: {fileID: 0}
+    - target: {fileID: 6235650747018723849, guid: cc8daf03157b2b94b8fbba22b8232e0e,
+        type: 3}
+      propertyPath: m_Name
+      value: WheelRight
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cc8daf03157b2b94b8fbba22b8232e0e, type: 3}
 --- !u!1 &1300163656 stripped
@@ -1169,6 +1173,12 @@ Animator:
 --- !u!4 &1300163660 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4384628565878546, guid: cc8daf03157b2b94b8fbba22b8232e0e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1300163655}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1305649772 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6235650747018723849, guid: cc8daf03157b2b94b8fbba22b8232e0e,
     type: 3}
   m_PrefabInstance: {fileID: 1300163655}
   m_PrefabAsset: {fileID: 0}
@@ -1305,7 +1315,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1442268796}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 13.46, y: 0.15, z: -0.13}
+  m_LocalPosition: {x: 14.06, y: 0.15, z: -0.13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1300163660}
@@ -1340,14 +1350,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82989069d1de9ef4db0f4a4128991ad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FrontWeelLeft: {fileID: 1118265281}
-  FrontWeelRight: {fileID: 91241261}
+  _animator: {fileID: 0}
+  _transform: {fileID: 0}
+  _leftWheelTransform: {fileID: 0}
+  _rightWheelTransform: {fileID: 0}
+  FrontWheelLeft: {fileID: 1152441535}
+  FrontWheelRight: {fileID: 1305649772}
   AnimatedObject: {fileID: 1300163656}
+  _wheelAngle: 0
+  _speed: 0
+  _acceleration: 0
   MaxSpeed: 10
   MaxAcceleration: 0.05
   AccelerationPower: 0.01
   DeAcceleration: 0.05
   BreakDeAcceleration: 0.1
-  WeelDistance: 1
-  MaxWeelAngle: 15
-  WeelRotationSpeed: 1
+  WheelDistance: 0.8
+  MaxWheelAngle: 15
+  WheelRotationSpeed: 1

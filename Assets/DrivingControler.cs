@@ -16,8 +16,8 @@ public class DrivingControler : MonoBehaviour
     public Transform _transform;
     public Transform _leftWheelTransform;
     public Transform _rightWheelTransform;
-    public GameObject FrontWeelLeft;
-    public GameObject FrontWeelRight;
+    public GameObject FrontWheelLeft;
+    public GameObject FrontWheelRight;
     public GameObject AnimatedObject;
 
     public float _wheelAngle = 0;
@@ -28,9 +28,9 @@ public class DrivingControler : MonoBehaviour
     public float AccelerationPower = 0.05f;
     public float DeAcceleration = 0.01f;
     public float BreakDeAcceleration = 0.01f;
-    public float WeelDistance = 0.8f;
-    public float MaxWeelAngle = 15f;
-    public float WeelRotationSpeed = 1f;
+    public float WheelDistance = 0.8f;
+    public float MaxWheelAngle = 15f;
+    public float WheelRotationSpeed = 1f;
 
     public DrivingControler()
     {
@@ -46,8 +46,8 @@ public class DrivingControler : MonoBehaviour
     void Start()
     {
         _animator = AnimatedObject.GetComponent<Animator>();
-        _leftWheelTransform = FrontWeelLeft?.GetComponent<Transform>();
-        _rightWheelTransform = FrontWeelRight?.GetComponent<Transform>();
+        _leftWheelTransform = FrontWheelLeft?.GetComponent<Transform>();
+        _rightWheelTransform = FrontWheelRight?.GetComponent<Transform>();
 
         _transform = GetComponent<Transform>();
     }
@@ -64,16 +64,16 @@ public class DrivingControler : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            if (Mathf.Abs(_wheelAngle) < MaxWeelAngle)
+            if (Mathf.Abs(_wheelAngle) < MaxWheelAngle)
             {
-                _wheelAngle += -WeelRotationSpeed;
+                _wheelAngle += -WheelRotationSpeed;
             }
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            if (Mathf.Abs(_wheelAngle) < MaxWeelAngle)
+            if (Mathf.Abs(_wheelAngle) < MaxWheelAngle)
             {
-                _wheelAngle += WeelRotationSpeed;
+                _wheelAngle += WheelRotationSpeed;
             }
         }
         else
@@ -87,24 +87,21 @@ public class DrivingControler : MonoBehaviour
 
     private void UpdateAsset()
     {
-        //_weelAngle = 30f;
-        //_speed = 5;
-
         var localForward = _transform.forward;
-        var backwardWeel = localForward * WeelDistance;
-        var forwardWeel = localForward * WeelDistance;
+        var backwardWheel = localForward * WheelDistance;
+        var forwardWheel = localForward * WheelDistance;
 
-        var backwardWeelPosition = _transform.position - backwardWeel;
-        var forwardWeelPosition = _transform.position + forwardWeel;
+        var backwardWheelPosition = _transform.position - backwardWheel;
+        var forwardWheelPosition = _transform.position + forwardWheel;
 
-        forwardWeelPosition += Quaternion.AngleAxis(_wheelAngle, _wheelRotationVector) * (localForward * WeelDistance * _speed * (float)Time.deltaTime);
-        backwardWeelPosition += localForward * WeelDistance * _speed * (float)Time.deltaTime;
+        forwardWheelPosition += Quaternion.AngleAxis(_wheelAngle, _wheelRotationVector) * (localForward * WheelDistance * _speed * (float)Time.deltaTime);
+        backwardWheelPosition += localForward * WheelDistance * _speed * (float)Time.deltaTime;
 
-        var carAngle = Vector3.Angle(forwardWeelPosition - backwardWeelPosition, localForward);
+        var carAngle = Vector3.Angle(forwardWheelPosition - backwardWheelPosition, localForward);
 
-        Debug.DrawRay(_transform.position, forwardWeel, Color.blue);
-        Debug.DrawRay(_transform.position, backwardWeel, Color.green);
-        Debug.DrawLine(backwardWeelPosition, forwardWeelPosition);
+        Debug.DrawRay(_transform.position, forwardWheel, Color.blue);
+        Debug.DrawRay(_transform.position, backwardWheel, Color.green);
+        Debug.DrawLine(backwardWheelPosition, forwardWheelPosition);
         if (_speed != 0)
         {
             _transform.Rotate(_wheelRotationVector, carAngle * Mathf.Sign(_wheelAngle) * Mathf.Sign(_speed));
