@@ -3,35 +3,34 @@ using UnityEngine;
 
 public class DrivingControler : MonoBehaviour
 {
-    private readonly Vector3 WeelRotationVector = new Vector3(0,1,0);
+    private readonly Vector3 _wheelRotationVector = new Vector3(0,1,0);
 
     const string _isDrivingParameterName = "Driving";
     const string _drivingState = "driving";
     const string _idleState = "idle";
     const string _loosingSpeedState = "loosingSpeed";
 
-    Animator _animator;
-    StateMachine _stateMachine;
-    Transform _transform;
-
-    Transform _leftWeelTransform;
-    Transform _rightWeelTransform;
-
-    float _weelAngle = 0;
-    float _speed = 0f;
-    float _acceleration = 0f;
-
-    public GameObject FrontWeelLeft;
-    public GameObject FrontWeelRight;
+    public GameObject FrontWheelLeft;
+    public GameObject FrontWheelRight;
     public GameObject AnimatedObject;
+
     public float MaxSpeed = 5f;
     public float MaxAcceleration = 0.5f;
     public float AccelerationPower = 0.05f;
     public float DeAcceleration = 0.01f;
     public float BreakDeAcceleration = 0.01f;
-    public float WeelDistance = 0.8f;
-    public float MaxWeelAngle = 15f;
-    public float WeelRotationSpeed = 1f;
+    public float WheelDistance = 0.8f;
+    public float MaxWheelAngle = 15f;
+    public float WheelRotationSpeed = 1f;
+
+    private Animator _animator;
+    private StateMachine _stateMachine;
+    private Transform _transform;
+    private Transform _leftWheelTransform;
+    private Transform _rightWheelTransform;
+    private float _wheelAngle = 0;
+    private float _speed = 0f;
+    private float _acceleration = 0f;
 
     public DrivingControler()
     {
@@ -47,8 +46,8 @@ public class DrivingControler : MonoBehaviour
     void Start()
     {
         _animator = AnimatedObject.GetComponent<Animator>();
-        _leftWeelTransform = FrontWeelLeft?.GetComponent<Transform>();
-        _rightWeelTransform = FrontWeelRight?.GetComponent<Transform>();
+        _leftWheelTransform = FrontWheelLeft?.GetComponent<Transform>();
+        _rightWheelTransform = FrontWheelRight?.GetComponent<Transform>();
 
         _transform = GetComponent<Transform>();
     }
@@ -65,51 +64,48 @@ public class DrivingControler : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            if (Mathf.Abs(_weelAngle) < MaxWeelAngle)
+            if (Mathf.Abs(_wheelAngle) < MaxWheelAngle)
             {
-                _weelAngle += -WeelRotationSpeed;
+                _wheelAngle += -WheelRotationSpeed;
             }
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            if (Mathf.Abs(_weelAngle) < MaxWeelAngle)
+            if (Mathf.Abs(_wheelAngle) < MaxWheelAngle)
             {
-                _weelAngle += WeelRotationSpeed;
+                _wheelAngle += WheelRotationSpeed;
             }
         }
         else
         {
-            _weelAngle = 0;
+            _wheelAngle = 0;
         }
 
-        _leftWeelTransform.rotation = _transform.rotation * Quaternion.Euler(0f, _weelAngle + 90f, 0f);
-        _rightWeelTransform.rotation = _transform.rotation * Quaternion.Euler(0f, _weelAngle + 90f, 0f);
+        _leftWheelTransform.rotation = _transform.rotation * Quaternion.Euler(0f, _wheelAngle + 90f, 0f);
+        _rightWheelTransform.rotation = _transform.rotation * Quaternion.Euler(0f, _wheelAngle + 90f, 0f);
     }
 
     private void UpdateAsset()
     {
-        //_weelAngle = 30f;
-        //_speed = 5;
-
         var localForward = _transform.forward;
-        var backwardWeel = localForward * WeelDistance;
-        var forwardWeel = localForward * WeelDistance;
+        var backwardWheel = localForward * WheelDistance;
+        var forwardWheel = localForward * WheelDistance;
 
-        var backwardWeelPosition = _transform.position - backwardWeel;
-        var forwardWeelPosition = _transform.position + forwardWeel;
+        var backwardWheelPosition = _transform.position - backwardWheel;
+        var forwardWheelPosition = _transform.position + forwardWheel;
 
-        forwardWeelPosition += Quaternion.AngleAxis(_weelAngle, WeelRotationVector) * (localForward * WeelDistance * _speed * (float)Time.deltaTime);
-        backwardWeelPosition += localForward * WeelDistance * _speed * (float)Time.deltaTime;
+        forwardWheelPosition += Quaternion.AngleAxis(_wheelAngle, _wheelRotationVector) * (localForward * WheelDistance * _speed * (float)Time.deltaTime);
+        backwardWheelPosition += localForward * WheelDistance * _speed * (float)Time.deltaTime;
 
-        var carAngle = Vector3.Angle(forwardWeelPosition - backwardWeelPosition, localForward);
+        var carAngle = Vector3.Angle(forwardWheelPosition - backwardWheelPosition, localForward);
 
-        Debug.DrawRay(_transform.position, forwardWeel, Color.blue);
-        Debug.DrawRay(_transform.position, backwardWeel, Color.green);
-        Debug.DrawLine(backwardWeelPosition, forwardWeelPosition);
+        Debug.DrawRay(_transform.position, forwardWheel, Color.blue);
+        Debug.DrawRay(_transform.position, backwardWheel, Color.green);
+        Debug.DrawLine(backwardWheelPosition, forwardWheelPosition);
         if (_speed != 0)
         {
-            _transform.Rotate(WeelRotationVector, carAngle * Mathf.Sign(_weelAngle) * Mathf.Sign(_speed));
-            _transform.position += Quaternion.AngleAxis(carAngle, WeelRotationVector) * (_transform.forward * _speed * (float)Time.deltaTime);
+            _transform.Rotate(_wheelRotationVector, carAngle * Mathf.Sign(_wheelAngle) * Mathf.Sign(_speed));
+            _transform.position += Quaternion.AngleAxis(carAngle, _wheelRotationVector) * (_transform.forward * _speed * (float)Time.deltaTime);
         }
     }
 
