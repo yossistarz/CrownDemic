@@ -62,6 +62,16 @@ public class DrivingControler : MonoBehaviour
 
     private void UpdateRotation()
     {
+        if (_wheelAngle  > 0 && Input.GetKey(KeyCode.LeftArrow))
+        {
+            _wheelAngle = 0;
+        }
+
+        if (_wheelAngle < 0 && Input.GetKey(KeyCode.RightArrow))
+        {
+            _wheelAngle = 0;
+        }
+
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             if (Mathf.Abs(_wheelAngle) < MaxWheelAngle)
