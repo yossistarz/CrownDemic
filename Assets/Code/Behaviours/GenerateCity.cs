@@ -17,6 +17,20 @@ public class GenerateCity : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GenerateMap();
+
+    }
+
+    private void DistroyMap()
+    {
+        foreach (Transform child in transform)
+            Destroy(child.gameObject);
+
+        _map = null;
+    }
+
+    void GenerateMap()
+    {
         _map = new Map(20, 20);
         GameObject newCube;
 
@@ -30,7 +44,7 @@ public class GenerateCity : MonoBehaviour
                 {
                     if (cell.MapCellType == Map.MapCellType.Road)
                     {
-                       
+
                         foreach (var path in cell.ConnectionPoints)
                         {
                             newCube = Instantiate<GameObject>(RoadTemplate);
@@ -48,7 +62,7 @@ public class GenerateCity : MonoBehaviour
                             newCube.SetActive(true);
                         }
                     }
-                    
+
                     if (cell.MapCellType == Map.MapCellType.Free)
                     {
                         newCube = Instantiate<GameObject>(FreeTemplate);
@@ -68,7 +82,7 @@ public class GenerateCity : MonoBehaviour
             }
         }
 
-        foreach(var intersect in _map.Intersections)
+        foreach (var intersect in _map.Intersections)
         {
             newCube = Instantiate<GameObject>(IntersectionTemplate);
             float cubeSize = cellSize / 4f;
