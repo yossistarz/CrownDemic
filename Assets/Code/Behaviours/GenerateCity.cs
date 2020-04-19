@@ -8,6 +8,7 @@ public class GenerateCity : MonoBehaviour
     const float cellSize = 10f;
     private Map _map;
 
+    public Pedestrian Pedestrian;
     public GameObject RoadTemplate;
     public GameObject IntersectionTemplate;
     public GameObject FreeTemplate;
@@ -46,6 +47,8 @@ public class GenerateCity : MonoBehaviour
                             newCube.transform.position = GetWorldPosition(cell.Position, path.Points[1], newCube.transform.localScale);
 
                             newCube.SetActive(true);
+
+                            var newlyInstantiatedPedestrian = Instantiate(Pedestrian, newCube.transform.position, Quaternion.identity);
                         }
                     }
                     
