@@ -17,6 +17,7 @@ public class Pedestrian : MonoBehaviour
         {
             return new Vector3(1, 0, 0);
         }
+
         _direction = GetStartDirection();
 
     }
