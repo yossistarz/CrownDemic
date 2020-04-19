@@ -20,6 +20,7 @@ public class GenerateCity : MonoBehaviour
     {
         _map = new Map(20, 20);
         GameObject newCube;
+        var pedestrains = new List<Pedestrian>();
 
         for (var row = 0; row < _map.Rows; row++)
         {
@@ -31,7 +32,8 @@ public class GenerateCity : MonoBehaviour
                 {
                     if (cell.MapCellType == Map.MapCellType.Road)
                     {
-                       
+                        
+
                         foreach (var path in cell.ConnectionPoints)
                         {
                             newCube = Instantiate<GameObject>(RoadTemplate);
@@ -47,11 +49,13 @@ public class GenerateCity : MonoBehaviour
                             newCube.transform.position = GetWorldPosition(cell.Position, path.Points[1], newCube.transform.localScale);
 
                             newCube.SetActive(true);
-
-                            var newlyInstantiatedPedestrian = Instantiate(Pedestrian, newCube.transform.position, Quaternion.identity);
                         }
+
+                        pedestrains.Add(Instantiate(Pedestrian,
+                            GetWorldPosition(cell.Position),
+                            Quaternion.identity));
                     }
-                    
+
                     if (cell.MapCellType == Map.MapCellType.Free)
                     {
                         newCube = Instantiate<GameObject>(FreeTemplate);
@@ -67,11 +71,10 @@ public class GenerateCity : MonoBehaviour
                     newCube.transform.position = GetWorldPosition(cell.Position);
 
                 }
-
             }
         }
 
-        foreach(var intersect in _map.Intersections)
+        foreach (var intersect in _map.Intersections)
         {
             newCube = Instantiate<GameObject>(IntersectionTemplate);
             float cubeSize = cellSize / 4f;
