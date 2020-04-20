@@ -6,7 +6,7 @@ using UnityEngine;
 public class Pedestrian : MonoBehaviour
 {
     private float SPEED_MAGNITUDE = 1f;
-    private Vector3 _direction;
+    public Vector3 Direction;
     private bool _rightKeyAlreadyPressed = false;
     private bool _leftKeyAlreadyPressed = false;
 
@@ -18,7 +18,7 @@ public class Pedestrian : MonoBehaviour
             return new Vector3(1, 0, 0);
         }
 
-        _direction = GetStartDirection();
+        Direction = GetStartDirection();
 
     }
 
@@ -26,71 +26,73 @@ public class Pedestrian : MonoBehaviour
     void Update()
     {
 
-        bool ShouldTurnLeft()
-        {
-            if (Input.GetKey("a"))
-            {
-                if (_leftKeyAlreadyPressed)
-                {
-                    return false;
-                }
-                else
-                {
-                    _leftKeyAlreadyPressed = true;
-                    return true;
-                }
-            }
-            else
-            {
-                _leftKeyAlreadyPressed = false;
-                return false;
-            }
-        }
+        //bool ShouldTurnLeft()
+        //{
+        //    if (Input.GetKey("a"))
+        //    {
+        //        if (_leftKeyAlreadyPressed)
+        //        {
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            _leftKeyAlreadyPressed = true;
+        //            return true;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        _leftKeyAlreadyPressed = false;
+        //        return false;
+        //    }
+        //}
 
-        bool ShouldTurnRight()
-        {
-            if (Input.GetKey("d"))
-            {
-                if (_rightKeyAlreadyPressed)
-                {
-                    return false;
-                }
-                else
-                {
-                    _rightKeyAlreadyPressed = true;
-                    return true;
-                }
-            }
-            else
-            {
-                _rightKeyAlreadyPressed = false;
-                return false;
-            }
-        }
-
-
-        if (ShouldTurnLeft())
-        {
-            _direction = GetDirectionAfterLeftTurn(_direction);
-        }
-        if (ShouldTurnRight())
-        {
-            _direction = GetDirectionAfterRightTurn(_direction);
-        }
+        //bool ShouldTurnRight()
+        //{
+        //    if (Input.GetKey("d"))
+        //    {
+        //        if (_rightKeyAlreadyPressed)
+        //        {
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            _rightKeyAlreadyPressed = true;
+        //            return true;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        _rightKeyAlreadyPressed = false;
+        //        return false;
+        //    }
+        //}
 
 
-        transform.position += _direction * SPEED_MAGNITUDE * Time.deltaTime;
+        //if (ShouldTurnLeft())
+        //{
+        //    _direction = GetDirectionAfterLeftTurn(_direction);
+        //}
+        //if (ShouldTurnRight())
+        //{
+        //    _direction = GetDirectionAfterRightTurn(_direction);
+        //}
+
+
+        transform.position += Direction * SPEED_MAGNITUDE * Time.deltaTime;
 
     }
 
-    public static Vector3 GetDirectionAfterRightTurn(Vector3 direction)
+    public Vector3 TurnRight()
     {
-        return Quaternion.AngleAxis(90, Vector3.up) * direction;
+        Direction = Quaternion.AngleAxis(90, Vector3.up) * Direction;
+        return Direction; 
     }
 
-    private Vector3 GetDirectionAfterLeftTurn(Vector3 direction)
-    {
-        return Quaternion.AngleAxis(-90, Vector3.up) * direction;
 
+    public Vector3 TurnLeft()
+    {
+        Direction = Quaternion.AngleAxis(-90, Vector3.up) * Direction;
+        return Direction;
     }
 }

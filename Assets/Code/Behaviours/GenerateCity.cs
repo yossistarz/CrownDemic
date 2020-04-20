@@ -12,6 +12,7 @@ public class GenerateCity : MonoBehaviour
     public GameObject RoadTemplate;
     public GameObject IntersectionTemplate;
     public GameObject FreeTemplate;
+    private List<Pedestrian> _pedestrians = new List<Pedestrian>();
 
     public Map Map { get => _map; }
 
@@ -38,7 +39,7 @@ public class GenerateCity : MonoBehaviour
 
                     if (cell.MapCellType == Map.MapCellType.Road)
                     {
-                        var a = Instantiate(pedestrian, GetNewPedestrianPosition(cell), Quaternion.identity);
+                        _pedestrians.Add(Instantiate(pedestrian, GetNewPedestrianPosition(cell), Quaternion.identity));
                         
                         foreach (var path in cell.ConnectionPoints)
                         {
@@ -103,6 +104,23 @@ public class GenerateCity : MonoBehaviour
         // https://docs.unity3d.com/ScriptReference/Transform-parent.html?_ga=2.51063529.1903334404.1586621367-266296751.1584777261 
     }
 
+    void Update()
+    {
+        bool ShouldTurnLeft()
+        {
+            return Random.Range(0, 100) % 100 == 0;
+        }
+            
+        foreach (var pedestrian in _pedestrians)
+        {
+            
+            var currentPedestrianDirection = pedestrian.Direction;
+            if (ShouldTurnLeft())
+            {
+                pedestrian.TurnLeft();
+            }
+        }
+    }
 
     public Vector3 GetWorldPosition(MapPoint point)
     {
