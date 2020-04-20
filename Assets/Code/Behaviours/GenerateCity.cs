@@ -8,7 +8,7 @@ public class GenerateCity : MonoBehaviour
     const float cellSize = 10f;
     private Map _map;
 
-    public Pedestrian Pedestrian;
+    public Pedestrian pedestrian;
     public GameObject RoadTemplate;
     public GameObject IntersectionTemplate;
     public GameObject FreeTemplate;
@@ -18,6 +18,12 @@ public class GenerateCity : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Vector3 GetNewPedestrianPosition(MapCell cell){
+            var pedestrianPositionVector = GetWorldPosition(cell.Position);
+            pedestrianPositionVector.y = pedestrian.transform.position.y;
+            return pedestrianPositionVector;
+        }
+
         _map = new Map(20, 20);
         GameObject newCube;
 
@@ -32,10 +38,8 @@ public class GenerateCity : MonoBehaviour
 
                     if (cell.MapCellType == Map.MapCellType.Road)
                     {
-                        Instantiate(Pedestrian,
-                             GetWorldPosition(cell.Position),
-                            Quaternion.identity);
-
+                        var a = Instantiate(pedestrian, GetNewPedestrianPosition(cell), Quaternion.identity);
+                        
                         foreach (var path in cell.ConnectionPoints)
                         {
                             newCube = Instantiate<GameObject>(RoadTemplate);
