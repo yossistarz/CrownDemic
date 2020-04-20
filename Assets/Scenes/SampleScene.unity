@@ -1581,7 +1581,6 @@ GameObject:
   - component: {fileID: 1452110515}
   - component: {fileID: 1452110514}
   - component: {fileID: 1452110513}
-  - component: {fileID: 1452110518}
   m_Layer: 0
   m_Name: Pedestrian
   m_TagString: Untagged
@@ -1676,19 +1675,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1452110518
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1452110512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac06f671fa493a84e9e021bcb8a3deb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GenerateCity: {fileID: 1211649471}
 --- !u!1 &1809666871
 GameObject:
   m_ObjectHideFlags: 0
