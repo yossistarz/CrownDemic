@@ -12,7 +12,11 @@ public class GenerateCity : MonoBehaviour
     public GameObject RoadTemplate;
     public GameObject IntersectionTemplate;
     public GameObject FreeTemplate;
+    public Pedestrian prefabPedestrian;
+
     private List<Pedestrian> _pedestrians = new List<Pedestrian>();
+    private Vector3 lowerLeftCornerPosition = new Vector3(-10, 0, -10);
+    private float _lookAheadDistanceMagnitude = 0.3f;
 
     public Map Map { get => _map; }
 
@@ -28,6 +32,8 @@ public class GenerateCity : MonoBehaviour
         _map = new Map(20, 20);
         GameObject newCube;
 
+        var a = true;
+
         for (var row = 0; row < _map.Rows; row++)
         {
             for (var col = 0; col < _map.Cols; col++)
@@ -40,7 +46,7 @@ public class GenerateCity : MonoBehaviour
                     if (cell.MapCellType == Map.MapCellType.Road)
                     {
                         _pedestrians.Add(Instantiate(pedestrian, GetNewPedestrianPosition(cell), Quaternion.identity));
-                        
+
                         foreach (var path in cell.ConnectionPoints)
                         {
                             newCube = Instantiate<GameObject>(RoadTemplate);
@@ -104,18 +110,25 @@ public class GenerateCity : MonoBehaviour
         // https://docs.unity3d.com/ScriptReference/Transform-parent.html?_ga=2.51063529.1903334404.1586621367-266296751.1584777261 
     }
 
-    void Update()
+    public MapCell GetCellFromPosition(Vector3 position)
     {
-        bool ShouldTurnLeft()
-        {
-            return Random.Range(0, 100) % 100 == 0;
-        }
-            
+        var a = position - lowerLeftCornerPosition;
+        var row = Mathf.FloorToInt(a.x) / Mathf.FloorToInt(cellSize);
+        var col = Mathf.FloorToInt(a.z) / Mathf.FloorToInt(cellSize);
+
+        var b = _map.GetMapCell(row, col);
+        return b;
+    }
+
+    void Update()
+    {            
         foreach (var pedestrian in _pedestrians)
         {
-            
+            var a = pedestrian.transform.position;
+            var b = pedestrian.Direction * _lookAheadDistanceMagnitude;
+            var c = GetCellFromPosition(a + b);
             var currentPedestrianDirection = pedestrian.Direction;
-            if (ShouldTurnLeft())
+            if (c.MapCellType != MapCellType.Road)
             {
                 pedestrian.TurnLeft();
             }
