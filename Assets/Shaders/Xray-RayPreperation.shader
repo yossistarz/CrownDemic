@@ -33,7 +33,7 @@ Shader "XRay Shaders/Ray Preperation"
 		void surf(Input IN, inout SurfaceOutput o)
 		{
 			//fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
-			o.Albedo = fixed3(0,0,0)//c.rgb;
+			o.Albedo = fixed3(0,0,0);//c.rgb;
 			o.Alpha = 1;
 		}
 		ENDCG
