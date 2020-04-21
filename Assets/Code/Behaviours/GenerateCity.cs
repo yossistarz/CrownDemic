@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static Map;
+using Random = UnityEngine.Random;
 
 public class GenerateCity : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class GenerateCity : MonoBehaviour
     public GameObject IntersectionTemplate;
     public GameObject FreeTemplate;
     public Pedestrian prefabPedestrian;
+    public float CreatePedestrainProbability = 0.7f;
 
     private List<Pedestrian> _pedestrians = new List<Pedestrian>();
     private Vector3 lowerLeftCornerPosition = new Vector3(-10, 0, -10);
@@ -24,15 +26,13 @@ public class GenerateCity : MonoBehaviour
     void Start()
     {
         Vector3 GetNewPedestrianPosition(MapCell cell){
-            var pedestrianPositionVector = GetWorldPosition(cell.Position);
+            var pedestrianPositionVector = GetWorldPosition(cell.Position) - new Vector3(-5f, 0, -5f);
             pedestrianPositionVector.y = pedestrian.transform.position.y;
             return pedestrianPositionVector;
         }
 
         _map = new Map(20, 20);
         GameObject newCube;
-
-        var a = true;
 
         for (var row = 0; row < _map.Rows; row++)
         {
@@ -42,10 +42,14 @@ public class GenerateCity : MonoBehaviour
 
                 if (cell != null)
                 {          
-
-                    if (cell.MapCellType == Map.MapCellType.Road)
+                    if (cell.MapCellType == MapCellType.Road)
                     {
-                        _pedestrians.Add(Instantiate(pedestrian, GetNewPedestrianPosition(cell), Quaternion.identity));
+                        if (Random.Range(0f, 1f) < CreatePedestrainProbability)
+                        {
+                            var newPedestrian = Instantiate(pedestrian, GetNewPedestrianPosition(cell), Quaternion.identity);
+                            newPedestrian.SpeedMagnitude = Random.Range(0f, 3f);
+                            _pedestrians.Add(newPedestrian);
+                        }
 
                         foreach (var path in cell.ConnectionPoints)
                         {
@@ -112,23 +116,26 @@ public class GenerateCity : MonoBehaviour
 
     public MapCell GetCellFromPosition(Vector3 position)
     {
-        var a = position - lowerLeftCornerPosition;
-        var row = Mathf.FloorToInt(a.x) / Mathf.FloorToInt(cellSize);
-        var col = Mathf.FloorToInt(a.z) / Mathf.FloorToInt(cellSize);
-
-        var b = _map.GetMapCell(row, col);
-        return b;
+        var relativePosition = position - lowerLeftCornerPosition;
+        var row = Mathf.FloorToInt(relativePosition.x) / Mathf.FloorToInt(cellSize);
+        var col = Mathf.FloorToInt(relativePosition.z) / Mathf.FloorToInt(cellSize);
+        try
+        {
+            return _map.GetMapCell(row, col);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     void Update()
     {            
         foreach (var pedestrian in _pedestrians)
         {
-            var a = pedestrian.transform.position;
-            var b = pedestrian.Direction * _lookAheadDistanceMagnitude;
-            var c = GetCellFromPosition(a + b);
-            var currentPedestrianDirection = pedestrian.Direction;
-            if (c.MapCellType != MapCellType.Road)
+            var cellOfLookingForward = GetCellFromPosition(pedestrian.transform.position + pedestrian.Direction * _lookAheadDistanceMagnitude);
+
+            if (cellOfLookingForward == null || cellOfLookingForward.MapCellType != MapCellType.Road)
             {
                 pedestrian.TurnLeft();
             }

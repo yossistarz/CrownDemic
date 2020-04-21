@@ -2,20 +2,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Pedestrian : MonoBehaviour
 {
-    private float SPEED_MAGNITUDE = 1f;
+    public float SpeedMagnitude = 1f;
     public Vector3 Direction;
-    private bool _rightKeyAlreadyPressed = false;
-    private bool _leftKeyAlreadyPressed = false;
 
     // Start is called before the first frame update
     void Start()
     {
         Vector3 GetStartDirection()
         {
-            return new Vector3(1, 0, 0);
+            switch (Random.Range(0, 4))
+            {
+                case 0:
+                    return new Vector3(1, 0, 0);
+                case 1:
+                    return new Vector3(-1, 0, 0);
+                case 2:
+                    return new Vector3(0, 0, 1);
+                case 3:
+                    return new Vector3(0, 0, -1);
+                default:
+                    return new Vector3(1, 0, 0);
+            }            
         }
 
         Direction = GetStartDirection();
@@ -26,60 +37,7 @@ public class Pedestrian : MonoBehaviour
     void Update()
     {
 
-        //bool ShouldTurnLeft()
-        //{
-        //    if (Input.GetKey("a"))
-        //    {
-        //        if (_leftKeyAlreadyPressed)
-        //        {
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            _leftKeyAlreadyPressed = true;
-        //            return true;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        _leftKeyAlreadyPressed = false;
-        //        return false;
-        //    }
-        //}
-
-        //bool ShouldTurnRight()
-        //{
-        //    if (Input.GetKey("d"))
-        //    {
-        //        if (_rightKeyAlreadyPressed)
-        //        {
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            _rightKeyAlreadyPressed = true;
-        //            return true;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        _rightKeyAlreadyPressed = false;
-        //        return false;
-        //    }
-        //}
-
-
-        //if (ShouldTurnLeft())
-        //{
-        //    _direction = GetDirectionAfterLeftTurn(_direction);
-        //}
-        //if (ShouldTurnRight())
-        //{
-        //    _direction = GetDirectionAfterRightTurn(_direction);
-        //}
-
-
-        transform.position += Direction * SPEED_MAGNITUDE * Time.deltaTime;
+        transform.position += Direction * SpeedMagnitude * Time.deltaTime;
 
     }
 
