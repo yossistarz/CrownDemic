@@ -7,6 +7,8 @@ using Random = UnityEngine.Random;
 public class GenerateCity : MonoBehaviour
 {
     const float cellSize = 10f;
+    private const int Rows = 20;
+    private const int Cols = 20;
     private Map _map;
 
     public Pedestrian pedestrian;
@@ -17,7 +19,7 @@ public class GenerateCity : MonoBehaviour
     public float CreatePedestrainProbability = 0.7f;
 
     private List<Pedestrian> _pedestrians = new List<Pedestrian>();
-    private Vector3 lowerLeftCornerPosition = new Vector3(-10, 0, -10);
+    private Vector3 bottomLeftCornerPosition = new Vector3(-10, 0, -10);
     private float _lookAheadDistanceMagnitude = 0.3f;
 
     public Map Map { get => _map; }
@@ -25,13 +27,14 @@ public class GenerateCity : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Vector3 GetNewPedestrianPosition(MapCell cell){
+        Vector3 GetNewPedestrianPosition(MapCell cell)
+        {
             var pedestrianPositionVector = GetWorldPosition(cell.Position) - new Vector3(-5f, 0, -5f);
             pedestrianPositionVector.y = pedestrian.transform.position.y;
             return pedestrianPositionVector;
         }
 
-        _map = new Map(20, 20);
+        _map = new Map(Rows, Cols);
         GameObject newCube;
 
         for (var row = 0; row < _map.Rows; row++)
@@ -41,7 +44,7 @@ public class GenerateCity : MonoBehaviour
                 var cell = _map.GetMapCell(row, col);
 
                 if (cell != null)
-                {          
+                {
                     if (cell.MapCellType == MapCellType.Road)
                     {
                         if (Random.Range(0f, 1f) < CreatePedestrainProbability)
@@ -67,7 +70,7 @@ public class GenerateCity : MonoBehaviour
 
                             newCube.SetActive(true);
                         }
-                        
+
                     }
 
                     if (cell.MapCellType == Map.MapCellType.Free)
@@ -83,7 +86,7 @@ public class GenerateCity : MonoBehaviour
                     newCube.transform.localScale = new Vector3(cellSize, 0.1f, cellSize);
                     newCube.transform.parent = this.transform;
                     newCube.transform.position = GetWorldPosition(cell.Position);
-                    
+
                 }
             }
         }
@@ -116,9 +119,9 @@ public class GenerateCity : MonoBehaviour
 
     public MapCell GetCellFromPosition(Vector3 position)
     {
-        var relativePosition = position - lowerLeftCornerPosition;
-        var row = Mathf.FloorToInt(relativePosition.x) / Mathf.FloorToInt(cellSize);
-        var col = Mathf.FloorToInt(relativePosition.z) / Mathf.FloorToInt(cellSize);
+        var relativePosition = position - bottomLeftCornerPosition;
+        var row = Mathf.FloorToInt(relativePosition.x) / Mathf.RoundToInt(cellSize);
+        var col = Mathf.FloorToInt(relativePosition.z) / Mathf.RoundToInt(cellSize);
         try
         {
             return _map.GetMapCell(row, col);
@@ -129,11 +132,18 @@ public class GenerateCity : MonoBehaviour
         }
     }
 
+    public bool IsPositionOutOfBounds(Vector3 position)
+    {
+        return (position.x < bottomLeftCornerPosition.x || position.x > bottomLeftCornerPosition.x + Rows * cellSize ||
+                position.z < bottomLeftCornerPosition.z || position.z > bottomLeftCornerPosition.x + Cols * cellSize);
+    }
+
     void Update()
-    {            
+    {
         foreach (var pedestrian in _pedestrians)
         {
-            var cellOfLookingForward = GetCellFromPosition(pedestrian.transform.position + pedestrian.Direction * _lookAheadDistanceMagnitude);
+            var positionOfLookingAhead = pedestrian.transform.position + pedestrian.Direction * _lookAheadDistanceMagnitude;
+            var cellOfLookingForward = IsPositionOutOfBounds(positionOfLookingAhead) ? null : GetCellFromPosition(positionOfLookingAhead);
 
             if (cellOfLookingForward == null || cellOfLookingForward.MapCellType != MapCellType.Road)
             {
