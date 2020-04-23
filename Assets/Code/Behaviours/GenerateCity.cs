@@ -1,23 +1,40 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static Map;
+using Random = UnityEngine.Random;
 
 public class GenerateCity : MonoBehaviour
 {
     const float cellSize = 10f;
+    private const int Rows = 20;
+    private const int Cols = 20;
     private Map _map;
 
+    public Pedestrian pedestrian;
     public GameObject RoadTemplate;
     public GameObject IntersectionTemplate;
     public GameObject FreeTemplate;
+    public Pedestrian prefabPedestrian;
+    public float CreatePedestrainProbability = 0.7f;
+
+    private List<Pedestrian> _pedestrians = new List<Pedestrian>();
+    private Vector3 bottomLeftCornerPosition = new Vector3(-10, 0, -10);
+    private float _lookAheadDistanceMagnitude = 0.3f;
 
     public Map Map { get => _map; }
 
     // Start is called before the first frame update
     void Start()
     {
-        _map = new Map(20, 20);
+        Vector3 GetNewPedestrianPosition(MapCell cell)
+        {
+            var pedestrianPositionVector = GetWorldPosition(cell.Position) - new Vector3(-5f, 0, -5f);
+            pedestrianPositionVector.y = pedestrian.transform.position.y;
+            return pedestrianPositionVector;
+        }
+
+        _map = new Map(Rows, Cols);
         GameObject newCube;
 
         for (var row = 0; row < _map.Rows; row++)
@@ -28,9 +45,15 @@ public class GenerateCity : MonoBehaviour
 
                 if (cell != null)
                 {
-                    if (cell.MapCellType == Map.MapCellType.Road)
+                    if (cell.MapCellType == MapCellType.Road)
                     {
-                       
+                        if (Random.Range(0f, 1f) < CreatePedestrainProbability)
+                        {
+                            var newPedestrian = Instantiate(pedestrian, GetNewPedestrianPosition(cell), Quaternion.identity);
+                            newPedestrian.SpeedMagnitude = Random.Range(0f, 3f);
+                            _pedestrians.Add(newPedestrian);
+                        }
+
                         foreach (var path in cell.ConnectionPoints)
                         {
                             newCube = Instantiate<GameObject>(RoadTemplate);
@@ -47,8 +70,9 @@ public class GenerateCity : MonoBehaviour
 
                             newCube.SetActive(true);
                         }
+
                     }
-                    
+
                     if (cell.MapCellType == Map.MapCellType.Free)
                     {
                         newCube = Instantiate<GameObject>(FreeTemplate);
@@ -64,11 +88,10 @@ public class GenerateCity : MonoBehaviour
                     newCube.transform.position = GetWorldPosition(cell.Position);
 
                 }
-
             }
         }
 
-        foreach(var intersect in _map.Intersections)
+        foreach (var intersect in _map.Intersections)
         {
             newCube = Instantiate<GameObject>(IntersectionTemplate);
             float cubeSize = cellSize / 4f;
@@ -94,6 +117,34 @@ public class GenerateCity : MonoBehaviour
         // https://docs.unity3d.com/ScriptReference/Transform-parent.html?_ga=2.51063529.1903334404.1586621367-266296751.1584777261 
     }
 
+    public MapCell GetCellFromPosition(Vector3 position)
+    {
+        var relativePosition = position - bottomLeftCornerPosition;
+        var row = Mathf.FloorToInt(relativePosition.x) / Mathf.RoundToInt(cellSize);
+        var col = Mathf.FloorToInt(relativePosition.z) / Mathf.RoundToInt(cellSize);
+
+        return _map.GetMapCell(row, col);
+    }
+
+    public bool IsPositionOutOfBounds(Vector3 position)
+    {
+        return (position.x < bottomLeftCornerPosition.x || position.x > bottomLeftCornerPosition.x + Rows * cellSize ||
+                position.z < bottomLeftCornerPosition.z || position.z > bottomLeftCornerPosition.x + Cols * cellSize);
+    }
+
+    void Update()
+    {
+        foreach (var pedestrian in _pedestrians)
+        {
+            var positionOfLookingAhead = pedestrian.transform.position + pedestrian.Direction * _lookAheadDistanceMagnitude;
+            var cellOfLookingForward = IsPositionOutOfBounds(positionOfLookingAhead) ? null : GetCellFromPosition(positionOfLookingAhead);
+
+            if (cellOfLookingForward == null || cellOfLookingForward.MapCellType != MapCellType.Road)
+            {
+                pedestrian.TurnLeft();
+            }
+        }
+    }
 
     public Vector3 GetWorldPosition(MapPoint point)
     {
