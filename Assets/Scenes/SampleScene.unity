@@ -1214,7 +1214,7 @@ MonoBehaviour:
   IntersectionTemplate: {fileID: 618667385}
   FreeTemplate: {fileID: 1393558983}
   prefabPedestrian: {fileID: 0}
-  CreatePedestrainProbability: 0.5
+  CreatePedestrainProbability: 0.74
 --- !u!4 &1211649472
 Transform:
   m_ObjectHideFlags: 0

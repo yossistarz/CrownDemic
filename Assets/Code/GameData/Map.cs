@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Linq;
 using UnityEngine;
+using System;
+using Random = UnityEngine.Random;
 
 public class Map
 {
@@ -29,8 +29,8 @@ public class Map
 
     private void CreateIntersections()
     {
-        int maxNodes = System.Math.Max(Rows, Cols) / 2;
-        int minNodes = (int)System.Math.Ceiling(maxNodes / 3.0f);
+        int maxNodes = Math.Max(Rows, Cols) / 2;
+        int minNodes = (int)Math.Ceiling(maxNodes / 3.0f);
         int nodeCount = Random.Range(minNodes, maxNodes + 1);
         int minNodeDistance = 0;
 
@@ -67,8 +67,8 @@ public class Map
                     newPoint.Col += Random.Range(-minNodeDistance, minNodeDistance + 1);
 
                     // Preventing from row and col to be out of bounds.
-                    newPoint.Row = System.Math.Min(System.Math.Max(newPoint.Row, 0), Rows - 1);
-                    newPoint.Col = System.Math.Min(System.Math.Max(newPoint.Col, 0), Cols - 1);
+                    newPoint.Row = Math.Min(Math.Max(newPoint.Row, 0), Rows - 1);
+                    newPoint.Col = Math.Min(Math.Max(newPoint.Col, 0), Cols - 1);
 
                     if (maxIteretions <= 0)
                     {
@@ -180,8 +180,8 @@ public class Map
             var rowSteps = Random.Range(0, 2);
             var colSteps = 1 - rowSteps;
 
-            var rowSign = System.Math.Sign(to.Position.Row - from.Position.Row);
-            var colSign = System.Math.Sign(to.Position.Col - from.Position.Col);
+            var rowSign = Math.Sign(to.Position.Row - from.Position.Row);
+            var colSign = Math.Sign(to.Position.Col - from.Position.Col);
 
             MapPoint position = from.Position;
 
@@ -319,12 +319,20 @@ public class Map
 
     public MapCell GetMapCell(int row, int col)
     {
-        var point = new MapPoint()
+        try
         {
-            Row = row,
-            Col = col
-        };
-        return GetMapCell(point);
+            var point = new MapPoint()
+            {
+                Row = row,
+                Col = col
+            };
+            return GetMapCell(point);
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Error getting map cell. Row : {row}, col : {col}, error: {e.Message}");
+            return null;
+        }
     }
 
     public class Node

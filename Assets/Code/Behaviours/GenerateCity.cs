@@ -122,14 +122,8 @@ public class GenerateCity : MonoBehaviour
         var relativePosition = position - bottomLeftCornerPosition;
         var row = Mathf.FloorToInt(relativePosition.x) / Mathf.RoundToInt(cellSize);
         var col = Mathf.FloorToInt(relativePosition.z) / Mathf.RoundToInt(cellSize);
-        try
-        {
-            return _map.GetMapCell(row, col);
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+
+        return _map.GetMapCell(row, col);
     }
 
     public bool IsPositionOutOfBounds(Vector3 position)
